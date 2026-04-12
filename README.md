@@ -1,6 +1,6 @@
 # Virus Game Server (Rust + MongoDB)
 
-Backend completo del juego. La logica se ejecuta 100% en servidor.
+Backend completo del juego. La logica se ejecuta en servidor.
 
 ## Requisitos
 
