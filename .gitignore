@@ -1,0 +1,10 @@
+# Rust build artifacts
+server-rust/target/
+
+# Local environment files
+.env
+.env.*
+
+# Editor/system
+.DS_Store
+Thumbs.db

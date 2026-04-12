@@ -31,6 +31,39 @@ Servidor:
 - HTTP: `http://localhost:3000`
 - WebSocket: `ws://localhost:3000/ws`
 
+## Archivos versionados vs generados
+
+Archivos/carpetas que SI se suben a git:
+
+- Codigo fuente: `server-rust/src/**`
+- Configuracion de Rust: `server-rust/Cargo.toml`, `server-rust/Cargo.lock`
+- Configuracion de build policy workaround: `server-rust/.cargo/config.toml`
+- Documentacion: `README.md`
+
+Archivos/carpetas que NO se suben (se generan localmente):
+
+- `server-rust/target/` (artefactos de compilacion)
+- archivos `.env` locales
+
+Comandos para regenerar lo necesario:
+
+```powershell
+cd server-rust
+
+# compilar (genera target/)
+cargo build
+
+# ejecutar servidor
+cargo run
+```
+
+Si necesitas recrear lockfile:
+
+```powershell
+cd server-rust
+cargo generate-lockfile
+```
+
 ## Flujo recomendado para frontend
 
 1. Crear sala por HTTP.
