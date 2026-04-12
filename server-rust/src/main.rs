@@ -8,8 +8,8 @@ mod ws_handlers;
 use app_state::AppState;
 use axum::{routing::{get, post}, Router};
 use http_handlers::{
-    api_endpoints, close_room, create_room, get_my_role, get_open_rooms, get_room_actions,
-    get_room_chat, get_room_state, health, reopen_room,
+    api_endpoints, close_room, create_room, db_status, get_my_role, get_open_rooms,
+    get_room_actions, get_room_chat, get_room_state, health, reopen_room,
 };
 use repository::ActionRepository;
 use std::net::SocketAddr;
@@ -37,6 +37,7 @@ async fn main() {
 
     let app = Router::new()
         .route("/health", get(health))
+        .route("/db/status", get(db_status))
         .route("/api/endpoints", get(api_endpoints))
         .route("/rooms", post(create_room))
         .route("/rooms/open", get(get_open_rooms))

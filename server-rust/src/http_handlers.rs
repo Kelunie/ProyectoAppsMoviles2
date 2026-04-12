@@ -10,6 +10,10 @@ pub async fn health() -> Json<serde_json::Value> {
     Json(json!({"ok": true}))
 }
 
+pub async fn db_status(State(state): State<AppState>) -> Json<serde_json::Value> {
+    Json(state.repo.get_status().await)
+}
+
 #[derive(Debug, Deserialize)]
 pub struct CreateRoomRequest {
     pub name: String,
@@ -165,6 +169,7 @@ pub async fn api_endpoints() -> Json<serde_json::Value> {
         "ok": true,
         "http": {
             "health": {"method": "GET", "path": "/health"},
+            "db_status": {"method": "GET", "path": "/db/status"},
             "create_room": {"method": "POST", "path": "/rooms", "body": ["name", "host_user_id"]},
             "open_rooms": {"method": "GET", "path": "/rooms/open"},
             "close_room": {"method": "POST", "path": "/rooms/:room_id/close", "body": ["requester_user_id"]},

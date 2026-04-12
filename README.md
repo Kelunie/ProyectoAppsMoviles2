@@ -95,7 +95,8 @@ Evento `join` obligatorio:
 ### Salud y catalogo
 
 1. `GET /health`
-2. `GET /api/endpoints`
+2. `GET /db/status`
+3. `GET /api/endpoints`
 
 ### Salas
 
@@ -207,6 +208,13 @@ Nota: el servidor emite eventos de tiempo real filtrados por sala, cada socket r
 ## Persistencia MongoDB
 
 Coleccion: `actions`
+
+Si la base de datos indicada en `MONGODB_URI` no existe, el servidor la crea automaticamente al iniciar.
+Tambien crea automaticamente la coleccion `actions` (si falta) y genera indices para consultas por sesion/tiempo.
+
+Puedes validar esto con:
+
+- `GET /db/status`
 
 Se registran eventos como:
 
