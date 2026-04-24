@@ -44,6 +44,34 @@ Servidor:
 - HTTP: `http://localhost:3000`
 - WebSocket: `ws://localhost:3000/ws`
 
+## Deploy en Koyeb (Dockerfile)
+
+Este repo ya incluye `server-rust/Dockerfile` y `server-rust/.dockerignore`.
+
+No necesitas Docker instalado localmente para deployar en Koyeb: Koyeb puede construir la imagen directamente desde tu repositorio.
+
+### Pasos
+
+1. Sube los cambios al repo (incluyendo el Dockerfile).
+2. En Koyeb crea un nuevo servicio Web desde GitHub.
+3. Selecciona este repositorio y rama.
+4. Configura el `Root Directory` en `server-rust`.
+5. Asegura que Koyeb detecte y use el `Dockerfile`.
+6. En Variables de entorno agrega:
+
+```env
+MONGODB_URI=mongodb+srv://<user>:<password>@<cluster>.mongodb.net/?appName=VirusGame
+PORT=8000
+```
+
+Nota: Koyeb suele inyectar `PORT` automaticamente. Si lo define la plataforma, puedes omitirlo en variables manuales.
+
+### Verificacion post-deploy
+
+- Health: `GET /health`
+- DB: `GET /db/status`
+- WS: `wss://<tu-dominio-koyeb>/ws`
+
 ## Archivos versionados vs generados
 
 Archivos/carpetas que SI se suben a git:
