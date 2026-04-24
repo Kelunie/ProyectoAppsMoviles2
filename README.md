@@ -59,7 +59,7 @@ Este repo incluye `render.yaml` en la raiz con la configuracion lista para Rende
 
 - `runtime: rust`
 - `rootDir: server-rust`
-- `buildCommand: cargo build --release`
+- `buildCommand: CARGO_TARGET_DIR=target cargo build --release`
 - `startCommand: ./target/release/virus_game_server`
 - `healthCheckPath: /health`
 
@@ -75,7 +75,7 @@ MONGODB_URI=mongodb+srv://<user>:<password>@<cluster>.mongodb.net/?appName=Virus
 
 - Runtime: `Rust`
 - Root Directory: `server-rust`
-- Build Command: `cargo build --release`
+- Build Command: `CARGO_TARGET_DIR=target cargo build --release`
 - Start Command: `./target/release/virus_game_server`
 - Health Check Path: `/health`
 
@@ -300,3 +300,5 @@ Si aparece `An Application Control policy has blocked this file (os error 4551)`
 - `target-dir = "C:/RustBuilds/virus-game-server"`
 
 para evitar ejecutar binarios dentro de OneDrive.
+
+En plataformas Linux como Render, conviene sobreescribir esto en el comando de build con `CARGO_TARGET_DIR=target` para no heredar la ruta de Windows.

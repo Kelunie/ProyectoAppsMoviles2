@@ -5,7 +5,7 @@ services:
     runtime: rust
     plan: free
     rootDir: server-rust
-    buildCommand: cargo build --release
+    buildCommand: CARGO_TARGET_DIR=target cargo build --release
     startCommand: ./target/release/virus_game_server
     healthCheckPath: /health
     envVars:
