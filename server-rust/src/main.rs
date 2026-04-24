@@ -7,6 +7,7 @@ mod ws_handlers;
 
 use app_state::AppState;
 use axum::{routing::{get, post}, Router};
+use dotenvy::dotenv;
 use http_handlers::{
     api_endpoints, close_room, create_room, db_status, get_my_role, get_open_rooms,
     get_room_actions, get_room_chat, get_room_state, health, reopen_room,
@@ -19,6 +20,8 @@ use ws_handlers::ws_handler;
 
 #[tokio::main]
 async fn main() {
+    dotenv().ok();
+
     tracing_subscriber::fmt()
         .with_env_filter("info")
         .compact()

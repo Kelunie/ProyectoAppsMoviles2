@@ -5,18 +5,31 @@ Backend completo del juego. La logica se ejecuta en servidor.
 ## Requisitos
 
 1. Rust (cargo)
-2. MongoDB Server corriendo como servicio local
+2. MongoDB local o un cluster de MongoDB Atlas
 
 ## Variables de entorno
 
 - `PORT` (opcional, default `3000`)
 - `MONGODB_URI` (opcional, default `mongodb://127.0.0.1:27017/virus_game`)
 
+Puedes definirlas en `server-rust/.env` (recomendado):
+
+```env
+PORT=3000
+MONGODB_URI=mongodb://127.0.0.1:27017/virus_game
+```
+
 Ejemplo (PowerShell):
 
 ```powershell
 $env:PORT="3000"
 $env:MONGODB_URI="mongodb://127.0.0.1:27017/virus_game"
+```
+
+Ejemplo MongoDB Atlas:
+
+```env
+MONGODB_URI=mongodb+srv://<user>:<password>@<cluster>.mongodb.net/?appName=VirusGame
 ```
 
 ## Ejecutar
