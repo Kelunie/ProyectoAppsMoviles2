@@ -55,7 +55,15 @@ Este repo incluye `render.yaml` en la raiz con la configuracion lista para Rende
 1. Sube los cambios a GitHub.
 2. En Render elige `New +` -> `Blueprint`.
 3. Selecciona este repositorio.
-4. En variables de entorno, define:
+4. Render va a leer automaticamente estas opciones del blueprint:
+
+- `runtime: rust`
+- `rootDir: server-rust`
+- `buildCommand: cargo build --release`
+- `startCommand: ./target/release/virus_game_server`
+- `healthCheckPath: /health`
+
+5. Cuando Render te pida secretos, define:
 
 ```env
 MONGODB_URI=mongodb+srv://<user>:<password>@<cluster>.mongodb.net/?appName=VirusGame
@@ -66,8 +74,10 @@ MONGODB_URI=mongodb+srv://<user>:<password>@<cluster>.mongodb.net/?appName=Virus
 ### Opcion B: configuracion manual en Web Service
 
 - Runtime: `Rust`
-- Build Command: `cd server-rust && cargo build --release`
-- Start Command: `cd server-rust && ./target/release/virus_game_server`
+- Root Directory: `server-rust`
+- Build Command: `cargo build --release`
+- Start Command: `./target/release/virus_game_server`
+- Health Check Path: `/health`
 
 ### Verificacion post-deploy
 
@@ -84,6 +94,7 @@ Archivos/carpetas que SI se suben a git:
 - Codigo fuente: `server-rust/src/**`
 - Configuracion de Rust: `server-rust/Cargo.toml`, `server-rust/Cargo.lock`
 - Configuracion de build policy workaround: `server-rust/.cargo/config.toml`
+- Configuracion de deploy en Render: `render.yaml`
 - Documentacion: `README.md`
 
 Archivos/carpetas que NO se suben (se generan localmente):
