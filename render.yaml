@@ -1,0 +1,13 @@
+# yaml-language-server: $schema=https://render.com/schema/render.yaml.json
+services:
+  - type: web
+    name: virus-game-server
+    runtime: rust
+    plan: free
+    rootDir: server-rust
+    buildCommand: cargo build --release
+    startCommand: ./target/release/virus_game_server
+    healthCheckPath: /health
+    envVars:
+      - key: MONGODB_URI
+        sync: false

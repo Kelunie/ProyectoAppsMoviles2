@@ -44,33 +44,38 @@ Servidor:
 - HTTP: `http://localhost:3000`
 - WebSocket: `ws://localhost:3000/ws`
 
-## Deploy en Koyeb (Dockerfile)
+## Deploy en Render (plan gratuito)
 
-Este repo ya incluye `server-rust/Dockerfile` y `server-rust/.dockerignore`.
+No necesitas Docker instalado localmente para deployar en Render.
 
-No necesitas Docker instalado localmente para deployar en Koyeb: Koyeb puede construir la imagen directamente desde tu repositorio.
+### Opcion A (recomendada): usando `render.yaml`
 
-### Pasos
+Este repo incluye `render.yaml` en la raiz con la configuracion lista para Render (runtime nativo de Rust).
 
-1. Sube los cambios al repo (incluyendo el Dockerfile).
-2. En Koyeb crea un nuevo servicio Web desde GitHub.
-3. Selecciona este repositorio y rama.
-4. Configura el `Root Directory` en `server-rust`.
-5. Asegura que Koyeb detecte y use el `Dockerfile`.
-6. En Variables de entorno agrega:
+1. Sube los cambios a GitHub.
+2. En Render elige `New +` -> `Blueprint`.
+3. Selecciona este repositorio.
+4. En variables de entorno, define:
 
 ```env
 MONGODB_URI=mongodb+srv://<user>:<password>@<cluster>.mongodb.net/?appName=VirusGame
-PORT=8000
 ```
 
-Nota: Koyeb suele inyectar `PORT` automaticamente. Si lo define la plataforma, puedes omitirlo en variables manuales.
+`PORT` no hace falta configurarlo manualmente en Render: la plataforma lo inyecta automaticamente.
+
+### Opcion B: configuracion manual en Web Service
+
+- Runtime: `Rust`
+- Build Command: `cd server-rust && cargo build --release`
+- Start Command: `cd server-rust && ./target/release/virus_game_server`
 
 ### Verificacion post-deploy
 
 - Health: `GET /health`
 - DB: `GET /db/status`
-- WS: `wss://<tu-dominio-koyeb>/ws`
+- WS: `wss://<tu-dominio-render>/ws`
+
+Nota: en el plan gratis Render puede dormir el servicio por inactividad. El primer request luego de un rato puede tardar unos segundos en responder.
 
 ## Archivos versionados vs generados
 
