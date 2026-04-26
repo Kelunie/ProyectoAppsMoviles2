@@ -334,8 +334,8 @@ impl GameEngine {
         if game.started {
             return Err("el juego ya inicio".to_string());
         }
-        if game.players.len() < 8 {
-            return Err("se requieren al menos 8 jugadores para esta version".to_string());
+        if game.players.len() < 5 {
+            return Err("se requieren al menos 5 jugadores para esta version".to_string());
         }
 
         assign_roles(game)?;
