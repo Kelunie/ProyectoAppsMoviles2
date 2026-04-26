@@ -2,6 +2,8 @@ use crate::models::{GameState, Role};
 use rand::seq::SliceRandom;
 use std::collections::HashMap;
 
+const MIN_PLAYERS_TO_ASSIGN_ROLES: usize = 5;
+
 pub fn assign_pairings_and_turns(game: &mut GameState) {
     let mut ids: Vec<String> = game.players.keys().cloned().collect();
     ids.shuffle(&mut rand::thread_rng());
@@ -15,7 +17,7 @@ pub fn assign_roles(game: &mut GameState) -> Result<(), String> {
     let mut ids: Vec<String> = game.players.keys().cloned().collect();
     ids.shuffle(&mut rand::thread_rng());
 
-    if ids.len() < 8 {
+    if ids.len() < MIN_PLAYERS_TO_ASSIGN_ROLES {
         return Err("jugadores insuficientes".to_string());
     }
 
