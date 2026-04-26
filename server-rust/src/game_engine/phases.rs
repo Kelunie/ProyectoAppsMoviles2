@@ -21,12 +21,18 @@ pub fn assign_roles(game: &mut GameState) -> Result<(), String> {
         return Err("jugadores insuficientes".to_string());
     }
 
+    // Si hay menos de 8 jugadores, usamos 1 terrorista. Con 8 o mas, 2.
+    let terrorists_count = if ids.len() < 8 { 1 } else { 2 };
+
     for (i, id) in ids.iter().enumerate() {
-        let role = match i {
-            0 | 1 => Role::Terrorist,
-            2 => Role::Investigator,
-            3 => Role::Fanatic,
-            _ => Role::Citizen,
+        let role = if i < terrorists_count {
+            Role::Terrorist
+        } else if i == terrorists_count {
+            Role::Investigator
+        } else if i == terrorists_count + 1 {
+            Role::Fanatic
+        } else {
+            Role::Citizen
         };
 
         if let Some(player) = game.players.get_mut(id) {
