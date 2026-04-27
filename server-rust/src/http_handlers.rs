@@ -44,6 +44,11 @@ pub async fn get_open_rooms(State(state): State<AppState>) -> Json<serde_json::V
     Json(json!({"ok": true, "rooms": rooms}))
 }
 
+pub async fn get_live_rooms(State(state): State<AppState>) -> Json<serde_json::Value> {
+    let rooms = state.engine.list_live_rooms().await;
+    Json(json!({"ok": true, "rooms": rooms}))
+}
+
 pub async fn close_room(
     State(state): State<AppState>,
     Path(room_id): Path<String>,
@@ -172,6 +177,7 @@ pub async fn api_endpoints() -> Json<serde_json::Value> {
             "db_status": {"method": "GET", "path": "/db/status"},
             "create_room": {"method": "POST", "path": "/rooms", "body": ["name", "host_user_id"]},
             "open_rooms": {"method": "GET", "path": "/rooms/open"},
+            "live_rooms": {"method": "GET", "path": "/rooms/live"},
             "close_room": {"method": "POST", "path": "/rooms/:room_id/close", "body": ["requester_user_id"]},
             "reopen_room": {"method": "POST", "path": "/rooms/:room_id/reopen", "body": ["requester_user_id"]},
             "room_state": {"method": "GET", "path": "/rooms/:room_id/state"},
@@ -191,6 +197,7 @@ pub async fn api_endpoints() -> Json<serde_json::Value> {
             "path": "/ws",
             "events_client_to_server": [
                 {"type": "join", "required": ["room_id", "user_id", "name"]},
+                {"type": "watch_room", "required": ["room_id"]},
                 {"type": "start_game"},
                 {"type": "terror_infect", "required": ["target_id"]},
                 {"type": "investigate", "required": ["target_id"]},

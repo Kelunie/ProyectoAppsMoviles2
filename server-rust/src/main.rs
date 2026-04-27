@@ -9,7 +9,7 @@ use app_state::AppState;
 use axum::{routing::{get, post}, Router};
 use dotenvy::dotenv;
 use http_handlers::{
-    api_endpoints, close_room, create_room, db_status, get_my_role, get_open_rooms,
+    api_endpoints, close_room, create_room, db_status, get_live_rooms, get_my_role, get_open_rooms,
     get_room_actions, get_room_chat, get_room_state, health, reopen_room,
 };
 use repository::ActionRepository;
@@ -44,6 +44,7 @@ async fn main() {
         .route("/api/endpoints", get(api_endpoints))
         .route("/rooms", post(create_room))
         .route("/rooms/open", get(get_open_rooms))
+        .route("/rooms/live", get(get_live_rooms))
         .route("/rooms/:room_id/close", post(close_room))
         .route("/rooms/:room_id/reopen", post(reopen_room))
         .route("/rooms/:room_id/state", get(get_room_state))

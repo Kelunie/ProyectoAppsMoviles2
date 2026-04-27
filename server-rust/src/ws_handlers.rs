@@ -20,26 +20,55 @@ async fn handle_socket(state: AppState, socket: WebSocket) {
     let mut rx = state.broadcast_tx.subscribe();
     let subscribed_room_id: Arc<Mutex<Option<String>>> = Arc::new(Mutex::new(None));
     let subscribed_room_id_tx = subscribed_room_id.clone();
+    let state_for_send = state.clone();
 
     let send_task = tokio::spawn(async move {
-        while let Ok(envelope) = rx.recv().await {
-            let current_subscribed = subscribed_room_id_tx.lock().await.clone();
-            let allow = match (&envelope.room_id, &current_subscribed) {
-                (None, _) => true,
-                (Some(target), Some(current)) => target == current,
-                (Some(_), None) => false,
-            };
+        loop {
+            match rx.recv().await {
+                Ok(envelope) => {
+                    let current_subscribed = subscribed_room_id_tx.lock().await.clone();
+                    let allow = match (&envelope.room_id, &current_subscribed) {
+                        (None, _) => true,
+                        (Some(target), Some(current)) => target == current,
+                        (Some(_), None) => false,
+                    };
 
-            if !allow {
-                continue;
-            }
+                    if !allow {
+                        continue;
+                    }
 
-            if sender
-                .send(Message::Text(envelope.payload.into()))
-                .await
-                .is_err()
-            {
-                break;
+                    if sender
+                        .send(Message::Text(envelope.payload.into()))
+                        .await
+                        .is_err()
+                    {
+                        break;
+                    }
+                }
+                Err(tokio::sync::broadcast::error::RecvError::Lagged(_)) => {
+                    let room_id = subscribed_room_id_tx.lock().await.clone();
+                    let Some(room_id) = room_id else {
+                        continue;
+                    };
+
+                    // Re-sincroniza con un snapshot completo cuando el socket queda atrasado.
+                    let Some(public) = state_for_send.engine.get_public_state(&room_id).await else {
+                        continue;
+                    };
+
+                    let payload = serde_json::to_string(&ServerEvent::PublicState {
+                        room_id: room_id.clone(),
+                        state: public,
+                    })
+                    .unwrap_or_else(|_| {
+                        "{\"type\":\"error\",\"message\":\"fallo serializando estado\"}".to_string()
+                    });
+
+                    if sender.send(Message::Text(payload.into())).await.is_err() {
+                        break;
+                    }
+                }
+                Err(tokio::sync::broadcast::error::RecvError::Closed) => break,
             }
         }
     });

@@ -115,6 +115,9 @@ pub enum ClientEvent {
         user_id: String,
         name: String,
     },
+    WatchRoom {
+        room_id: String,
+    },
     StartGame,
     TerrorInfect { target_id: String },
     Investigate { target_id: String },

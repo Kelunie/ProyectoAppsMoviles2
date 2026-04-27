@@ -88,6 +88,18 @@ impl GameEngine {
         list
     }
 
+    pub async fn list_live_rooms(&self) -> Vec<RoomSummary> {
+        let rooms = self.rooms.lock().await;
+        let mut list: Vec<RoomSummary> = rooms
+            .values()
+            .filter(|r| r.game.started && r.game.phase != Phase::Ended)
+            .map(RoomSummary::from_room)
+            .collect();
+
+        list.sort_by(|a, b| a.created_at_unix.cmp(&b.created_at_unix));
+        list
+    }
+
     pub async fn close_room(
         &self,
         room_id: &str,
@@ -195,8 +207,11 @@ impl GameEngine {
                 user_id,
                 name,
             } => self.join_player(&room_id, user_id, name).await,
+            ClientEvent::WatchRoom { room_id } => self.watch_room(&room_id).await,
             ClientEvent::StartGame => {
                 let room_id = current_room_id.ok_or_else(|| "debes unirte a una sala".to_string())?;
+                current_player_id
+                    .ok_or_else(|| "solo jugadores pueden iniciar la partida".to_string())?;
                 self.start_game(&room_id).await
             }
             ClientEvent::TerrorInfect { target_id } => {
@@ -221,9 +236,41 @@ impl GameEngine {
             }
             ClientEvent::AdvancePhase => {
                 let room_id = current_room_id.ok_or_else(|| "debes unirte a una sala".to_string())?;
+                current_player_id
+                    .ok_or_else(|| "solo jugadores pueden avanzar fase".to_string())?;
                 self.advance_phase(&room_id).await
             }
         }
+    }
+
+    async fn watch_room(
+        &self,
+        room_id: &str,
+    ) -> Result<(Option<String>, Option<String>, ServerEvent), String> {
+        let rooms = self.rooms.lock().await;
+        let room = rooms
+            .get(room_id)
+            .ok_or_else(|| "sala no encontrada".to_string())?;
+        let session_id = room.game.session_id.clone();
+        drop(rooms);
+
+        self.repo
+            .log_action(
+                &session_id,
+                "watch_room",
+                None,
+                json!({"room_id": room_id}),
+            )
+            .await;
+
+        Ok((
+            Some(room_id.to_string()),
+            None,
+            ServerEvent::Info {
+                room_id: Some(room_id.to_string()),
+                message: "modo espectador activado".to_string(),
+            },
+        ))
     }
 
     async fn join_player(
